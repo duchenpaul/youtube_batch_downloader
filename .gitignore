@@ -16,5 +16,6 @@
 
 *.list
 **/*.html
+**/*.db
 
 download/
