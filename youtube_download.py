@@ -1,5 +1,8 @@
 import requests
 import os
+import random
+import string
+import shutil
 
 import toolkit_file
 import toolkit_sqlite
@@ -8,6 +11,7 @@ import config
 
 VIDEO_LIST = 'youtube_video_download.list'
 proxy = '127.0.0.1:1080'
+proxy = '127.0.0.1:1081'
 downloadPath = 'download/'
 
 toolkit_file.create_folder(downloadPath)
@@ -44,10 +48,24 @@ def download_file(fileName, url):
     try:
         proxies = {'http': 'http://{}'.format(proxy),
                    'https': 'https://{}'.format(proxy)}
-        res = requests.get(url, proxies=proxies)
-        con = res.content
-        with open(fileName, 'wb') as f:
-            f.write(con)
+        res = requests.get(url, proxies=proxies, stream=True)
+        try:
+            N=4
+            seed = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(N))
+            tmpfile = fileName + '_{}.tmp'.format(seed)
+            # print(tmpfile)
+            with open(tmpfile, 'wb') as f:
+                shutil.copyfileobj(res.raw, f)
+        except Exception as e:
+            # Remove tmp file
+            os.remove(tmpfile)
+            raise
+        else:
+            # remove tmp file to final file
+            os.rename(tmpfile, fileName)
+        finally:
+            pass
+
     except Exception as e:
         print('Downloading failed')
         raise
@@ -60,6 +78,7 @@ def download_file(fileName, url):
 if __name__ == '__main__':
     for fileName, download_link, _id in read_list():
         try:
+            fileName = remove_illegal_char(fileName)
             print('Downloading ' + fileName)
             update_status(_id, 'DOWNLOADING')
             download_file(downloadPath + fileName, download_link)
