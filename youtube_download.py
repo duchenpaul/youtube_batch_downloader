@@ -10,8 +10,7 @@ import config
 
 
 VIDEO_LIST = 'youtube_video_download.list'
-proxy = '127.0.0.1:1080'
-proxy = '127.0.0.1:1081'
+proxy = config.proxy
 downloadPath = 'download/'
 
 toolkit_file.create_folder(downloadPath)

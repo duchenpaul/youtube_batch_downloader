@@ -11,7 +11,7 @@ import config
 
 QUERY_URL = 'https://y2mate.com/analyze/ajax'
 VIDEO_LIST = 'youtube_video.list'
-
+proxy = config.proxy
 
 def read_video_list():
     with open(VIDEO_LIST, 'r') as f:
@@ -53,7 +53,7 @@ def query_link_generate(youtube_link):
         "accept-language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
         "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
         "origin": "https://y2mate.com",
-        "referer": "https://y2mate.com/youtube/Xi52tx6phRU",
+        "referer": "https://y2mate.com/youtube",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36",
         "x-requested-with": "XMLHttpRequest",
     }
@@ -61,7 +61,7 @@ def query_link_generate(youtube_link):
     Sess = requests.session()
     req = Request('POST', QUERY_URL, data=data, headers=headers)
     prepped = Sess.prepare_request(req)
-    resp = Sess.send(prepped)
+    resp = Sess.send(prepped, proxies=proxy)
     resp_text = resp.content.decode('utf-8')
 
     # print(data)
